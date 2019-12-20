@@ -1,0 +1,75 @@
+# credentials set by setting GOOGLE_CLOUD_KEYFILE in setenv.sh
+provider "google" {
+  project = "1095834490097"
+  region  = "us-central1"
+  zone    = "us-central1-b"
+}
+
+// A single Google Cloud Engine instance
+resource "google_compute_instance" "default" {
+ name         = "minimal-vm"
+ machine_type = "f1-micro"
+// zone         = "us-west1-a"
+
+ boot_disk {
+   initialize_params {
+     image = "debian-cloud/debian-9"
+   }
+ }
+
+// Make sure flask is installed on all new instances for later steps
+ metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python-pip rsync; pip install flask"
+
+ network_interface {
+   network = "default"
+
+   access_config {
+     // Include this section to give the VM an external ip address
+   }
+ }
+}
+# resource "google_compute_instance" "vm_instance" {
+#   name         = "terraform-instance"
+#   machine_type = "f1-micro"
+
+#   boot_disk {
+#     initialize_params {
+#       image = "debian-cloud/debian-9"
+#     }
+#   }
+#   network_interface {
+#       network = google_compute_network.default.self_link
+#       access_config {
+#         nat_ip = google_compute_address.static.self_link
+#       }
+#   }
+# }
+
+# resource "google_compute_network" "default" {
+#   name = "my-network"
+# }
+
+# resource "google_compute_address" "static" {
+#   name = "ipv4-address"
+# }
+
+# resource "google_compute_network" "default" {
+#   name                    = "terraform-network"
+#   project                 = "1095834490097"
+#   auto_create_subnetworks = "false"
+# }
+
+# resource "google_compute_subnetwork" "default" {
+#   name          = "my-subnet"
+#   ip_cidr_range = "10.0.0.0/16"
+#   region        = "us-central1"
+#   network       = google_compute_network.default.self_link
+# }
+
+# resource "google_compute_address" "internal_with_subnet_and_address" {
+#   name         = "my-internal-address"
+#   subnetwork   = google_compute_subnetwork.default.self_link
+#   address_type = "INTERNAL"
+#   address      = "10.0.42.42"
+#   region       = "us-central1"
+# }
